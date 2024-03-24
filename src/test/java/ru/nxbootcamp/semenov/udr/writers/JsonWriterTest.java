@@ -24,6 +24,7 @@ class JsonWriterTest {
     void clear() {
         try (Stream<Path> files = Files.walk(Path.of(TEST_PATH))){
             files.map(Path::toFile).filter(File::isFile).forEach(File::delete);
+            Files.createFile(Path.of(TEST_PATH + ".gitkeep"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

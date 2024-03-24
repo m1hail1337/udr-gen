@@ -30,8 +30,17 @@ class UdrGeneratorTest {
     @AfterAll
     static void clearAll() {
         for (String path : REPORT_PATHS) {
-            try (Stream<Path> files = Files.walk(Path.of(path))){
+            Path filePath = Path.of(path);
+            try (Stream<Path> files = Files.walk(filePath)){
                 files.map(Path::toFile).filter(File::isFile).forEach(File::delete);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (String path : REPORT_PATHS) {
+            String gitkeep = Path.of(path).getParent().toString() + "/actual/.gitkeep";
+            try {
+                Files.createFile(Path.of(gitkeep));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

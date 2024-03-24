@@ -1,5 +1,6 @@
 package ru.nxbootcamp.semenov.cdr;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,15 @@ class CdrGeneratorTest {
             throw new RuntimeException(e);
         }
         reset(repository);
+    }
+
+    @AfterAll
+    static void addGitKeep() {
+        try {
+            Files.createFile(Path.of(TEST_REPORTS_PATH + ".gitkeep"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
