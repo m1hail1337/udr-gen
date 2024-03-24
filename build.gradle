@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'distribution'
+}
+
+group = 'ru.nxbootcamp.semenov'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+distributions {
+    main {
+        contents {
+            into('lib/') {  // Copy the following jars to the lib/ directory in the distribution archive
+                from jar
+                from configurations.runtimeClasspath
+                dirMode = 0755
+                fileMode = 0644
+            }
+            from('src/main/java') {  // Contents of this directory are copied by default
+                dirMode = 0755
+                fileMode = 0644
+            }
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'ru.nxbootcamp.semenov.Main'
+        )
+    }
+}
+
+dependencies {
+    implementation libs.h2database
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.jupiter
+    testImplementation libs.mockito
+}
+
+test {
+    useJUnitPlatform()
+}
