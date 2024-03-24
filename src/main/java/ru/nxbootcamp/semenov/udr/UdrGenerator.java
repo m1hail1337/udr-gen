@@ -7,9 +7,12 @@ import ru.nxbootcamp.semenov.udr.writers.ConsoleWriter;
 import ru.nxbootcamp.semenov.udr.writers.JsonWriter;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Month;
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ public class UdrGenerator {
         Map<String, Duration> totalIncomingDurations = new HashMap<>();
         Map<String, Duration> totalOutgoingDurations = new HashMap<>();
         Set<String> msisdnSet = new HashSet<>();
+        cleanReportsDirectory();
         for (Month month : Month.values()) {
             Map<String, List<Call>> msisdnToCalls = mapMsisdnToCallsForMonth(month);
             for (String msisdn : msisdnToCalls.keySet()) {
@@ -57,6 +61,7 @@ public class UdrGenerator {
     public static void generateReport(String msisdn) {
         Map<Month, Duration> incomingCalls = new HashMap<>();
         Map<Month, Duration> outgoingCalls = new HashMap<>();
+        cleanReportsDirectory();
         for (Month month : Month.values()) {
             Map<String, List<Call>> msisdnToCalls = mapMsisdnToCallsForMonth(month);
             for (String currentMsisdn : msisdnToCalls.keySet()) {
@@ -75,9 +80,19 @@ public class UdrGenerator {
         ConsoleWriter.printMsisdnStatistic(msisdn, incomingCalls, outgoingCalls);
     }
 
+    private static void cleanReportsDirectory() {
+        try {
+            Files.walk(Path.of(REPORTS_PATH)).map(Path::toFile)
+                    .filter(file -> file.getName().endsWith(".json")).forEach(File::delete);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void generateReport(String msisdn, Month month) {
         Map<String, List<Call>> msisdnToCalls = mapMsisdnToCallsForMonth(month);
         List<Call> targetCalls = msisdnToCalls.getOrDefault(msisdn, new ArrayList<>());
+        cleanReportsDirectory();
         Map<CallType, Duration> durations = countCallDurationsForMsisdn(targetCalls);
         JsonWriter.createJsonReport(msisdn, month, durations, REPORTS_PATH);
 
