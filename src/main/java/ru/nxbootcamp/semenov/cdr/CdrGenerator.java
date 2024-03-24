@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Класс, генерирующий случайные CDR-отчеты
+ */
 public class CdrGenerator {
 
     public static String REPORTS_PATH = "reports/cdr/";
@@ -28,6 +31,14 @@ public class CdrGenerator {
     private static final int MIN_CALL_DURATION = 10;
     private static final int MAX_CALL_DURATION = 3600;
 
+    /**
+     * Создает 12 файлов CDR (1 CDR = 1 месяц)
+     * Данные в CDR идут не по порядку, т.е. записи по одному абоненту могут быть в разных частях файла
+     * Количество и длительность звонков определяется случайным образом
+     * Установленный список абонентов хранится в локальной БД (h2) в таблице 'Contacts'
+     * После генерации CDR, данные о транзакциях пользователя помещаются в таблицу 'Calls'
+     * @param contacts контакты абонента
+     */
     public static void generateYearCdr(Set<String> contacts) {
         for (Month month : Month.values()) {
             List<Call> calls = generateCdr(contacts, month);
@@ -36,6 +47,14 @@ public class CdrGenerator {
         }
     }
 
+
+    /**
+     * Создает список звонков за месяц
+     * @param contacts контакты абонента
+     * @param month месяц
+     *
+     * @return звонки
+     */
     private static List<Call> generateCdr(Set<String> contacts, Month month) {
         List<Call> calls = new ArrayList<>();
         LocalDateTime currentDateTime = LocalDateTime.of(YEAR, month, 1, 0, 0);
@@ -53,6 +72,13 @@ public class CdrGenerator {
         return calls;
     }
 
+    /**
+     * Генерирует случайный звонок
+     * @param currentDateTime минимальное время начала
+     * @param contacts контакты абонента
+     *
+     * @return звонок
+     */
     private static Call generateCall(LocalDateTime currentDateTime, Set<String> contacts) {
         CallType callType = getRandomCallType();
         String msisdn = getRandomMsisdn(contacts);
@@ -83,6 +109,11 @@ public class CdrGenerator {
                 .plusSeconds(random.nextInt(60));
     }
 
+    /**
+     * Создает CDR-файл
+     * @param calls звонки
+     * @param month месяц
+     */
     private static void createMonthReport(List<Call> calls, Month month) {
         String fileName = REPORTS_PATH + month.name() + FILE_EXTENSION;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, StandardCharsets.UTF_8))) {

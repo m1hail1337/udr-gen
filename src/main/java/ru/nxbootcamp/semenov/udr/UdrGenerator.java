@@ -23,10 +23,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ *  ласс, генерирующий json-отчеты на основе существующих CDR-отчетов
+ */
 public class UdrGenerator {
 
     public static String REPORTS_PATH = "reports/udr/";
 
+    /**
+     * —охран€ет все отчеты и выводит в консоль таблицу со всеми абонентами
+     * и итоговым временем звонков по всему тарифицируемому периоду каждого абонента
+     */
     public static void generateReport() {
         Map<String, Duration> totalIncomingDurations = new HashMap<>();
         Map<String, Duration> totalOutgoingDurations = new HashMap<>();
@@ -58,6 +65,11 @@ public class UdrGenerator {
         totalOutgoingDurations.put(msisdn, currentOutgoingDuration.plus(durations.get(CallType.OUTGOING)));
     }
 
+    /**
+     * —охран€ет все отчеты и выводит в консоль таблицу по одному абоненту и его
+     * итоговому времени звонков в каждом мес€це
+     * @param msisdn номер телефона абонента
+     */
     public static void generateReport(String msisdn) {
         Map<Month, Duration> incomingCalls = new HashMap<>();
         Map<Month, Duration> outgoingCalls = new HashMap<>();
@@ -80,6 +92,10 @@ public class UdrGenerator {
         ConsoleWriter.printMsisdnStatistic(msisdn, incomingCalls, outgoingCalls);
     }
 
+
+    /**
+     * ”дал€ет старые отчеты в папке UDR-отчетов
+     */
     private static void cleanReportsDirectory() {
         try {
             Files.walk(Path.of(REPORTS_PATH)).map(Path::toFile)
@@ -89,6 +105,12 @@ public class UdrGenerator {
         }
     }
 
+    /**
+     * —охран€ет отчет и выводит в консоль таблицу по одному абоненту и его итоговому
+     * времени звонков в указанном мес€це
+     * @param msisdn номер абонента
+     * @param month рассматриваемый мес€ц
+     */
     public static void generateReport(String msisdn, Month month) {
         Map<String, List<Call>> msisdnToCalls = mapMsisdnToCallsForMonth(month);
         List<Call> targetCalls = msisdnToCalls.getOrDefault(msisdn, new ArrayList<>());

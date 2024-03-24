@@ -8,10 +8,20 @@ import java.time.Duration;
 import java.time.Month;
 import java.util.Map;
 
+/**
+ *  ласс, создающий JSON-файл отчета UDR
+ */
 public class JsonWriter {
 
     private static final String FILE_EXTENSION = ".json";
 
+    /**
+     * —оздает JSON-файл отчета UDR
+     * @param msisdn номер телефона собеседника
+     * @param month мес€ц
+     * @param durations длительность вход€щих/исход€щих звонков
+     * @param path директори€ хранени€ отчетов
+     */
     public static void createJsonReport(String msisdn, Month month, Map<CallType, Duration> durations, String path) {
         String file = path + msisdn + "_" + month.getValue() + FILE_EXTENSION;
         try (FileWriter writer = new FileWriter(file)) {

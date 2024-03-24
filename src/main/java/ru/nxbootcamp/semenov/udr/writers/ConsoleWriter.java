@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Класс, предоставляющий методы вывода в консоль информации по генерации UDR-отчетов
+ */
 public class ConsoleWriter {
 
     private static final String FULL_STATISTIC_LINE = "-------------------------------------\n";
@@ -21,6 +24,13 @@ public class ConsoleWriter {
     private static final String MONTHLY_MSISDN_STATISTIC_LINE = "----------------------------------------\n";
     private static final String COLUMN_SEPARATOR = " | ";
 
+    /**
+     * Выводит в консоль таблицу со всеми абонентами и итоговым временем звонков
+     * по всему тарифицируемому периоду каждого абонента
+     * @param msisdnSet контакты абонента
+     * @param incomingCalls входящие звонки
+     * @param outgoingCalls исходящие звонки
+     */
     public static void printFullStatistic(Set<String> msisdnSet,
                                           Map<String, Duration> incomingCalls,
                                           Map<String, Duration> outgoingCalls) {
@@ -37,16 +47,12 @@ public class ConsoleWriter {
         }
     }
 
-    private static void printMsisdnInfo(BufferedWriter writer,
-                                        String msisdn,
-                                        Duration incomingCallsDuration,
-                                        Duration outgoingCallsDuration) throws IOException {
-        writer.append(COLUMN_SEPARATOR.stripLeading()).append(msisdn).append(COLUMN_SEPARATOR);
-        writer.append(formatDuration(incomingCallsDuration)).append(COLUMN_SEPARATOR);
-        writer.append(formatDuration(outgoingCallsDuration)).append(COLUMN_SEPARATOR.stripTrailing());
-        writer.newLine();
-    }
-
+    /**
+     * Выводит в консоль таблицу по одному абоненту и его итоговому времени звонков в каждом месяце
+     * @param msisdn номер телефона собеседника
+     * @param incomingCalls входящие звонки
+     * @param outgoingCalls исходящие звонки
+     */
     public static void printMsisdnStatistic(String msisdn,
                                             Map<Month, Duration> incomingCalls,
                                             Map<Month, Duration> outgoingCalls) {
@@ -63,16 +69,13 @@ public class ConsoleWriter {
         }
     }
 
-    private static void printMonthInfo(BufferedWriter writer,
-                                       Month month,
-                                       Duration incomingCallsDuration,
-                                       Duration outgoingCallsDuration) throws IOException {
-        writer.append(COLUMN_SEPARATOR.stripLeading()).append(centerString(9, month.name()));
-        writer.append(COLUMN_SEPARATOR).append(formatDuration(incomingCallsDuration)).append(COLUMN_SEPARATOR);
-        writer.append(formatDuration(outgoingCallsDuration)).append(COLUMN_SEPARATOR.stripTrailing());
-        writer.newLine();
-    }
-
+    /**
+     * Выводит в консоль таблицу по одному абоненту и его итоговому времени звонков в указанном месяце.
+     * @param month месяц
+     * @param msisdn номер телефона собеседника
+     * @param calls звонки
+     * @param durations длительность входящих/исходящих звонков
+     */
     public static void printMonthlyMsisdnStatistic(Month month,
                                                    String msisdn,
                                                    List<Call> calls,
@@ -86,6 +89,26 @@ public class ConsoleWriter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void printMsisdnInfo(BufferedWriter writer,
+                                        String msisdn,
+                                        Duration incomingCallsDuration,
+                                        Duration outgoingCallsDuration) throws IOException {
+        writer.append(COLUMN_SEPARATOR.stripLeading()).append(msisdn).append(COLUMN_SEPARATOR);
+        writer.append(formatDuration(incomingCallsDuration)).append(COLUMN_SEPARATOR);
+        writer.append(formatDuration(outgoingCallsDuration)).append(COLUMN_SEPARATOR.stripTrailing());
+        writer.newLine();
+    }
+
+    private static void printMonthInfo(BufferedWriter writer,
+                                       Month month,
+                                       Duration incomingCallsDuration,
+                                       Duration outgoingCallsDuration) throws IOException {
+        writer.append(COLUMN_SEPARATOR.stripLeading()).append(centerString(9, month.name()));
+        writer.append(COLUMN_SEPARATOR).append(formatDuration(incomingCallsDuration)).append(COLUMN_SEPARATOR);
+        writer.append(formatDuration(outgoingCallsDuration)).append(COLUMN_SEPARATOR.stripTrailing());
+        writer.newLine();
     }
 
     private static void printCallInfo(BufferedWriter writer, Call call) throws IOException {
